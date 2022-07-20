@@ -1,1 +1,3 @@
 ---
+vault_url: "https://vault.domain.com"
+vault_token: "{{ lookup('community.hashi_vault.vault_token_create', auth_method='approle', role_id='xxxxxxxxxxxx', secret_id='xxxxxxxxxxxx', url='https://vault.domain.com', validate_certs='no') }}"
