@@ -1,0 +1,1 @@
+ansible-playbook site.yml -i inventory/k8s-test/hosts.yml --ask-pass --ask-become-pass -u admin_user --extra-vars="cluster=k8s_test tls_san=k8s-test-cluster,k8s-test-cluster.domain.com manifest_config_file_path=rke2-canal-backend-intf.yaml"
