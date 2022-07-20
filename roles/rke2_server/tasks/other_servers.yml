@@ -30,6 +30,29 @@
   when:
     - '"server:" not in server_url_check.stdout'
 
+- name: Enable service rke2-server
+  systemd:
+    name: rke2-server
+    state: stopped
+    enabled: yes
+
+- name: Set environment vars for proxy
+  blockinfile:
+     path: /etc/systemd/system/rke2-server.service
+     marker: "### {mark} SET PROXY"
+     state: present
+     block: |
+       Environment="HTTP_PROXY={{ http_proxy }}"
+       Environment="HTTPS_PROXY={{ https_proxy }}"
+       Environment="NO_PROXY=.svc,.default,.local,.cluster.local,localhost,{{ no_proxy }}"
+       Environment="CONTAINERD_HTTP_PROXY={{ http_proxy }}"
+       Environment="CONTAINERD_HTTPS_PROXY={{ https_proxy }}"
+       Environment="CONTAINERD_NO_PROXY=.svc,.default,.local,.cluster.local,localhost,{{ no_proxy }}"
+     when:
+       - http_proxy is defined
+       - https_proxy is defined
+       - no_proxy is defined
+
 - name: Start and wait for healthy node
   throttle: 1
   block:
