@@ -168,6 +168,21 @@
   when: updated_rke2_config.changed
   changed_when: false
 
+# --tls-san value (server only parameter) Add additional hostnames or IPv4/IPv6 addresses as Subject Alternative Names on the server TLS cert
+- name: Add additional hostnames to rke2_config
+  ansible.utils.update_fact:
+    updates:
+      - path: rke2_config["tls-san"]
+        value: "{{ tls_san.split(',') }}"
+  when:
+    - (tls_san is defined) and (tls_san|length > 0)
+  register: updated_rke2_config
+
+- name: Update rke2_config to take value of updated_rke2_config  # noqa no-handler
+  set_fact:
+    rke2_config: "{{ updated_rke2_config.rke2_config }}"
+  when: updated_rke2_config.changed
+
 # --cloud-provider-name value (agent/node) Cloud provider name
 - name: Add cloud-provider-name to rke2_config
   ansible.utils.update_fact:
