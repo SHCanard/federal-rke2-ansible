@@ -84,3 +84,18 @@
     - name: Store Master node-token
       set_fact:
         rke2_config_token: "{{ node_token.content | b64decode | regex_replace('\n', '') }}"
+
+- name: Store node Token to Vault
+  uri:
+    url: "{{ vault_url }}/v1/secret/data/k8s/{{ cluster }}"
+    body_format: json
+    method: POST
+    headers:  
+      X-Vault-Token: "{{ vault_token.auth.client_token }}"
+      X-Vault-Request: true
+      Content-Type: application/json
+    body: { "data": { "Master node-token":"{{ node_token.content | b64decode | regex_replace('\n', '') }}" }}
+    return_content: yes
+    status_code: ["200","204"]
+  when: (cluster is defined) and (cluster|length > 0)
+  no_log: True
